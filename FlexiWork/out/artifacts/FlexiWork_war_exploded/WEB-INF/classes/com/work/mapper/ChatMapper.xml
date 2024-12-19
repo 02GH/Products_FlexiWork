@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--ChatMapper.xml 文件是 MyBatis 框架中用于操作聊天记录的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+这一文件实现了聊天记录的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和分页操作。-->
+
+<mapper namespace="com.work.mapper.ChatMapper">
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Chat" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="content" property="content" jdbcType="VARCHAR" /> <!-- 聊天内容 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 聊天图片 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+		<result column="is_look" property="isLook" jdbcType="INTEGER" /> <!-- 是否已查看 -->
+		<result column="is_remove_fa" property="isRemoveFa" jdbcType="INTEGER" /> <!-- 发件人是否删除 -->
+		<result column="is_remove_jie" property="isRemoveJie" jdbcType="INTEGER" /> <!-- 收件人是否删除 -->
+		<result column="chat_signal" property="chatSignal" jdbcType="VARCHAR" /> <!-- 聊天信号 -->
+
+		<result column="user_id_fa" property="userIdFa" jdbcType="INTEGER" /> <!-- 发件人ID -->
+		<result column="nick_name_fa" property="nickNameFa" jdbcType="VARCHAR" /> <!-- 发件人昵称 -->
+		<result column="header_image_fa" property="headerImageFa" jdbcType="VARCHAR" /> <!-- 发件人头像 -->
+
+		<result column="user_id_jie" property="userIdJie" jdbcType="INTEGER" /> <!-- 收件人ID -->
+		<result column="nick_name_jie" property="nickNameJie" jdbcType="VARCHAR" /> <!-- 收件人昵称 -->
+		<result column="header_image_jie" property="headerImageJie" jdbcType="VARCHAR" /> <!-- 收件人头像 -->
+	</resultMap>
+
+	<!-- 查询聊天记录列表，支持条件过滤和分页 -->
+	<select id="getChatList" resultMap="BaseResultMap">
+		select c.*, f.user_id as user_id_fa, f.nick_name as nick_name_fa, f.header_image as header_image_fa,
+		j.user_id as user_id_jie, j.nick_name as nick_name_jie, j.header_image as header_image_jie from chat as c
+		LEFT JOIN user as f ON c.user_id_fa = f.user_id
+		LEFT JOIN user as j ON c.user_id_jie = j.user_id
+		where 1=1
+		<if test="chat.id != null">
+			and id like CONCAT('%',#{chat.id},'%') <!-- 根据聊天ID过滤 -->
+		</if>
+		<if test="chat.userIdFa != null">
+			and user_id_fa like CONCAT('%',#{chat.userIdFa},'%') <!-- 根据发件人ID过滤 -->
+		</if>
+		<if test="chat.userIdJie != null">
+			and user_id_jie like CONCAT('%',#{chat.userIdJie},'%') <!-- 根据收件人ID过滤 -->
+		</if>
+		<if test="chat.isLook != null">
+			and is_look like CONCAT('%',#{chat.isLook},'%') <!-- 根据是否查看过滤 -->
+		</if>
+		<if test="chat.isRemoveFa != null">
+			and is_remove_fa like CONCAT('%',#{chat.isRemoveFa},'%') <!-- 根据发件人删除状态过滤 -->
+		</if>
+		<if test="chat.isRemoveJie != null">
+			and is_remove_jie like CONCAT('%',#{chat.isRemoveJie},'%') <!-- 根据收件人删除状态过滤 -->
+		</if>
+		<if test="chat.chatSignal != null and chat.chatSignal != ''">
+			and chat_signal like CONCAT('%',#{chat.chatSignal},'%') <!-- 根据聊天信号过滤 -->
+		</if>
+		order by c.create_time desc <!-- 根据创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 支持分页 -->
+		</if>
+	</select>
+
+	<!-- 查询聊天记录总数，用于分页 -->
+	<select id="getChatListCount" resultType="Integer">
+		select count(*) from chat where 1=1
+		<if test="chat.id != null">
+			and id like CONCAT('%',#{chat.id},'%') <!-- 根据聊天ID过滤 -->
+		</if>
+		<if test="chat.userIdFa != null">
+			and user_id_fa like CONCAT('%',#{chat.userIdFa},'%') <!-- 根据发件人ID过滤 -->
+		</if>
+		<if test="chat.userIdJie != null">
+			and user_id_jie like CONCAT('%',#{chat.userIdJie},'%') <!-- 根据收件人ID过滤 -->
+		</if>
+		<if test="chat.isLook != null">
+			and is_look like CONCAT('%',#{chat.isLook},'%') <!-- 根据是否查看过滤 -->
+		</if>
+		<if test="chat.isRemoveFa != null">
+			and is_remove_fa like CONCAT('%',#{chat.isRemoveFa},'%') <!-- 根据发件人删除状态过滤 -->
+		</if>
+		<if test="chat.isRemoveJie != null">
+			and is_remove_jie like CONCAT('%',#{chat.isRemoveJie},'%') <!-- 根据收件人删除状态过滤 -->
+		</if>
+		<if test="chat.chatSignal != null and chat.chatSignal != ''">
+			and chat_signal like CONCAT('%',#{chat.chatSignal},'%') <!-- 根据聊天信号过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加聊天记录 -->
+	<insert id="addChat" useGeneratedKeys="true" keyProperty="chat.id" parameterType="com.work.pojo.Chat">
+		insert into
+			chat(user_id_fa, user_id_jie, content, image, chat_signal, create_time)
+		values(#{chat.userIdFa}, #{chat.userIdJie}, #{chat.content},
+			   #{chat.image}, #{chat.chatSignal}, #{chat.createTime})
+	</insert>
+
+	<!-- 更新聊天记录 -->
+	<update id="updateChat" parameterType="com.work.pojo.Chat">
+		update chat
+		<trim prefix="set" suffixOverrides=",">
+			<if test="chat.chatSignal != null and chat.chatSignal != ''">chat_signal = #{chat.chatSignal},</if>
+			<if test="chat.content != null and chat.content != ''">content = #{chat.content},</if>
+			<if test="chat.image != null and chat.image != ''">image = #{chat.image},</if>
+			<if test="chat.isLook != null">is_look = #{chat.isLook},</if>
+			<if test="chat.isRemoveFa != null">is_remove_fa = #{chat.isRemoveFa},</if>
+			<if test="chat.isRemoveJie != null">is_remove_jie = #{chat.isRemoveJie},</if>
+		</trim>
+		where 1 = 1
+		<if test="chat.id != null">
+			and id = #{chat.id} <!-- 根据聊天ID更新 -->
+		</if>
+		<if test="chat.userIdFa != null">
+			and user_id_fa = #{chat.userIdFa} <!-- 根据发件人ID更新 -->
+		</if>
+		<if test="chat.userIdJie != null">
+			and user_id_jie = #{chat.userIdJie} <!-- 根据收件人ID更新 -->
+		</if>
+	</update>
+
+	<!-- 根据ID获取聊天记录 -->
+	<select id="getChatById" resultMap="BaseResultMap">
+		select c.*, f.user_id as user_id_fa, f.nick_name as nick_name_fa, f.header_image as header_image_fa,
+		j.user_id as user_id_jie, j.nick_name as nick_name_jie, j.header_image as header_image_jie from chat as c
+		LEFT JOIN user as f ON c.user_id_fa = f.user_id
+		LEFT JOIN user as j ON c.user_id_jie = j.user_id
+		where id = #{id} <!-- 根据聊天记录ID获取详细信息 -->
+	</select>
+
+	<!-- 根据ID删除聊天记录 -->
+	<delete id="deleteChatById">
+		delete from chat where id = #{id} <!-- 根据聊天记录ID删除 -->
+	</delete>
+
+	<!-- 查找特定用户之间的聊天记录 -->
+	<select id="findChatList" resultMap="BaseResultMap">
+		select c.*, f.user_id as user_id_fa, f.nick_name as nick_name_fa, f.header_image as header_image_fa,
+		j.user_id as user_id_jie, j.nick_name as nick_name_jie, j.header_image as header_image_jie from chat as c
+		LEFT JOIN user as f ON c.user_id_fa = f.user_id
+		LEFT JOIN user as j ON c.user_id_jie = j.user_id
+		where (c.user_id_fa = #{chat.userIdFa} and c.user_id_jie = #{chat.userIdJie}
+		or c.user_id_fa = #{chat.userIdJie} and c.user_id_jie = #{chat.userIdFa}) <!-- 查找两个用户之间的聊天记录 -->
+		order by c.create_time asc
+		<if test="limit != null">
+			limit #{limit} <!-- 支持分页 -->
+		</if>
+	</select>
+
+	<!-- 查找特定用户之间的聊天记录总数 -->
+	<select id="findChatListCount" resultType="Integer">
+		select count(*) from chat as c
+		where (c.user_id_fa = #{chat.userIdFa} and c.user_id_jie = #{chat.userIdJie}
+		or c.user_id_fa = #{chat.userIdJie} and c.user_id_jie = #{chat.userIdFa}) <!-- 查询符合条件的聊天记录总数 -->
+	</select>
+
+	<!-- 获取我的聊天记录 -->
+	<select id="myChatList" resultMap="BaseResultMap">
+		select c.*, f.user_id as user_id_fa, f.nick_name as nick_name_fa, f.header_image as header_image_fa,
+		j.user_id as user_id_jie, j.nick_name as nick_name_jie, j.header_image as header_image_jie from chat as c
+		LEFT JOIN user as f ON c.user_id_fa = f.user_id
+		LEFT JOIN user as j ON c.user_id_jie = j.user_id
+		where c.id in (select MAX(id) from chat where
+		(user_id_fa = #{chat.userIdFa} and is_remove_fa = '0'
+		or user_id_jie = #{chat.userIdFa} and is_remove_jie = '0') <!-- 获取未删除的最新聊天记录 -->
+		group by chat_signal
+		) order by c.create_time desc
+	</select>
+</mapper>

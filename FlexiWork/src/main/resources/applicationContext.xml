@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--这段XML配置文件是Spring框架中用于配置Beans和其他相关组件的典型Spring配置文件。-->
+<!--它结合了Spring和MyBatis（一个流行的持久层框架）来管理数据库连接、事务和依赖注入。-->
+
+<!--属性配置：通过property-placeholder从外部配置文件加载数据库连接属性，提供灵活性和可配置性。
+数据源管理：使用Druid数据源管理连接池，以保证性能和资源管理。
+MyBatis集成：通过SqlSessionFactoryBean和MapperScannerConfigurer，配置MyBatis与Spring的集成，实现持久层管理。
+事务管理：通过Spring的事务管理器和注解驱动，确保数据库操作的一致性和完整性，简化事务管理。
+组件扫描：自动扫描指定包，创建服务层Beans，简化配置并促进松耦合设计。-->
+
+<!--XML声明：指定文档版本和编码。
+命名空间声明：为Beans、AOP、上下文、事务、和实用工具功能定义XML命名空间。
+Schema声明：指定Spring框架所使用的各个XSD模式文件，确保XML合法性和自动补全支持。-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop-4.2.xsd 
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx-4.2.xsd 
+http://www.springframework.org/schema/util 
+http://www.springframework.org/schema/util/spring-util-4.2.xsd ">
+
+	<!-- 属性占位符配置：读取jdbc.properties文件中的属性，用于配置数据库连接参数。允许在XML文件中使用${...}来引用这些属性。 -->
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	<!-- 数据源Bean：配置Druid数据源，使用从jdbc.properties读取的数据库连接参数（例如驱动、URL、用户名和密码） -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		<property name="driverClassName" value="${jdbc.driver}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+	</bean>
+
+	<!-- SqlSessionFactoryBean：配置MyBatis的SqlSessionFactory，设置MyBatis的核心配置文件SqlMapConfig.xml和数据源。注释部分可用于指定Mapper XML文件的位置 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 设置MyBatis核心配置文件 -->
+		<property name="configLocation" value="classpath:SqlMapConfig.xml" />
+		<!-- 设置数据源 -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- <property name="mapperLocations" value="classpath:com/work/mapper/userMapper.xml" /> -->
+	</bean>
+
+	<!-- (事务依赖数据源)事务管理器：配置Spring的事务管理器，基于数据源进行事务管理，支持数据库事务的开启、提交和回滚。 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	
+	<!-- (开启事务)事务注解驱动：启用注解形式的事务管理，指定使用的事务管理器。通过@Transactional注解可以在服务层实现事务控制 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- Mapper扫描配置：配置MapperScannerConfigurer，用于自动扫描特定包com.work.mapper下的Mapper接口，并将其作为Spring Beans进行管理 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 设置Mapper扫描包 -->
+		<property name="basePackage" value="com.work.mapper" />
+	</bean>
+	
+	<!-- (配置Service扫描)组件扫描配置：扫描com.work.service包下的类，自动检测和创建符合条件的Beans（如使用@Service注解的类） -->
+	<context:component-scan base-package="com.work.service" />
+
+	
+</beans>

@@ -1,0 +1,247 @@
+/* 上传和下载按钮的容器 */
+.upload-container {
+	margin: 20px 0;
+	text-align: center; /* 居中对齐 */
+}
+
+/* 按钮的通用样式 */
+.custom-button {
+	display: inline-block;
+	padding: 12px 24px; /* 增加按钮的内边距 */
+	font-size: 16px;
+	font-weight: bold;
+	color: #fff; /* 文字颜色 */
+	background: linear-gradient(90deg, #007bff, #00c6ff); /* 渐变背景 */
+	border: none;
+	border-radius: 8px; /* 圆角 */
+	cursor: pointer;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 阴影 */
+	transition: all 0.3s ease; /* 过渡效果 */
+	margin: 0 10px; /* 按钮之间的间距 */
+}
+
+/* 按钮悬停效果 */
+.custom-button:hover {
+	background: linear-gradient(90deg, #0056b3, #00aaff); /* 悬停时的渐变背景 */
+	box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* 悬停时的阴影 */
+	transform: translateY(-2px); /* 悬停时稍微上移 */
+}
+
+/* 按钮点击效果 */
+.custom-button:active {
+	transform: translateY(0); /* 点击时恢复原位 */
+	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1); /* 点击时的阴影 */
+}
+
+/* 文件输入框的样式 */
+.file-input {
+	display: none; /* 隐藏原生的文件输入框 */
+}
+
+/* 自定义文件选择按钮 */
+.custom-file-label {
+	display: inline-block;
+	padding: 10px 20px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #fff;
+	background: linear-gradient(90deg, #28a745, #21c87a); /* 渐变背景 */
+	border: none;
+	border-radius: 8px;
+	cursor: pointer;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
+}
+
+/* 文件选择按钮悬停效果 */
+.custom-file-label:hover {
+	background: linear-gradient(90deg, #1e7e34, #1abc9c); /* 悬停时的渐变背景 */
+	box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+	transform: translateY(-2px);
+}
+
+/* 文件选择按钮点击效果 */
+.custom-file-label:active {
+	transform: translateY(0);
+	box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.top{
+	width: 100%;
+	height: 120px;
+	background-color: #52cbc5;
+}
+.div_logo{ 
+	width: 190px;
+	height: 70px;
+	float: left;
+	margin-left: 100px;
+	margin-top: 40px;
+	background-color: #fff;
+	padding-top: 10px;
+	padding-left: 10px;
+	border-radius: 3px;
+}
+.div_logo img{
+	height: 50px;
+}
+/*top  ����*/
+
+.chat{
+	width: 100%;
+	height: 800px;
+	background-color: #52cbc5;
+}
+.chat_zhong{
+	width: 1100px;
+	height: 800px;
+	background-color: #52cbc5;
+	margin: 0 auto;
+}
+.chat_z{
+	width: 600px;
+	height: 600px;
+	background-color: #fff;
+	float: left;
+	margin-top: 100px;
+	margin-left: 250px;
+	border-radius: 10px;
+}
+.div_chat{
+	width: 560px;
+	height: 560px;
+	margin-top: 20px;
+	margin-left: 20px;
+	background-color: #eee;
+}
+.div_s{
+	width: 560px;
+	height: 460px;
+	background-color: #eee;
+	overflow: scroll;
+}
+
+/*����û�   begin*/
+.div_l{
+	width: 540px;
+	height: 60px;
+	float: left;
+	margin-top: 10px;
+}
+.div_l_l{
+	width: 60px;
+	height: 60px;
+	float: left;
+	position: relative;
+}
+.div_l_t{
+	width: 60px;
+	height: 60px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 5;
+}
+.div_l_t img{
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
+}
+.div_l_r{
+	width: 460px;
+	height: 60px;
+	float: left;
+	margin-left: 20px;
+	border-radius: 5px;
+}
+.div_l_r span{
+	display: block;
+	width: auto;
+	height: auto;
+	background-color: #ddd;
+	float: left;
+	color: #333;
+	font-size: 16px;
+	border-radius: 5px;
+	word-break: break-all;
+}
+
+/*�ұ��û�   begin*/
+.div_r{
+	width: 540px;
+	height: 60px;
+	float: left;
+	margin-top: 10px;
+}
+.div_r_r{
+	width: 60px;
+	height: 60px;
+	float: right;
+	position: relative;
+}
+.div_r_t{
+	width: 60px;
+	height: 60px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 5;
+}
+.div_r_t img{
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
+}
+.div_r_l{
+	width: 460px;
+	height: 60px;
+	float: left;
+	margin-right: 20px;
+	border-radius: 5px;
+}
+.div_r_l span{
+	display: block;
+	width: auto;
+	height: auto;
+	background-color: #ddd;
+	float: right;
+	color: #333;
+	font-size: 16px;
+	border-radius: 5px;
+	word-break: break-all;
+}
+
+/*������������   begin*/
+.div_x{
+	width: 560px;
+	height: 100px;
+	background-color: #eee;
+}
+.input_chat{
+	width: 480px;
+	height: 80px;
+	background-color: #ddd;
+	float: left;
+	margin-top: 10px;
+	color: #333;
+	font-size: 16px;
+}
+.input_fa{
+	width: 70px;
+	height: 40px;
+	background-color: #ddd;
+	float: left;
+	margin-left: 10px;
+	margin-top: 50px;
+	color: #333;
+	font-size: 16px;
+	cursor: pointer;
+}
+
+
+
+.bottom{
+	width: 100%;
+	height: 200px;
+	background-color: #52cbc5;
+}

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--WorkMapper.xml 文件是 MyBatis 框架中用于操作工作信息的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了工作信息的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和动态过滤。-->
+
+<mapper namespace="com.work.mapper.WorkMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Work" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 工作ID -->
+		<result column="phone" property="phone" jdbcType="VARCHAR" /> <!-- 联系电话 -->
+		<result column="title" property="title" jdbcType="VARCHAR" /> <!-- 工作标题 -->
+		<result column="content" property="content" jdbcType="VARCHAR" /> <!-- 工作内容 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 工作相关图片 -->
+		<result column="work_category" property="workCategory" jdbcType="VARCHAR" /> <!-- 工作类别 -->
+		<result column="is_effect" property="isEffect" jdbcType="INTEGER" /> <!-- 是否有效 -->
+		<result column="is_auditing" property="isAuditing" jdbcType="INTEGER" /> <!-- 是否审核中 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="real_name" property="realName" jdbcType="VARCHAR" /> <!-- 用户真实姓名 -->
+		<result column="header_image" property="headerImage" jdbcType="VARCHAR" /> <!-- 用户头像 -->
+	</resultMap>
+
+	<!-- 查询工作列表，支持多条件过滤和分页 -->
+	<select id="getWorkList" resultMap="BaseResultMap">
+		select * from work w
+		LEFT JOIN user u ON w.user_id = u.user_id <!-- 连接用户表以获取用户信息 -->
+		where 1=1
+		<if test="work.id != null">
+			and w.id like CONCAT('%',#{work.id},'%') <!-- 根据工作ID过滤 -->
+		</if>
+		<if test="work.userId != null">
+			and w.user_id like CONCAT('%',#{work.userId},'%') <!-- 根据用户ID过滤 -->
+		</if>
+		<if test="work.isEffect != null">
+			and w.is_effect like CONCAT('%',#{work.isEffect},'%') <!-- 根据有效状态过滤 -->
+		</if>
+		<if test="work.isAuditing != null">
+			and w.is_auditing like CONCAT('%',#{work.isAuditing},'%') <!-- 根据审核状态过滤 -->
+		</if>
+		<if test="work.workCategory != null and work.workCategory != ''">
+			and w.work_category like CONCAT('%',#{work.workCategory},'%') <!-- 根据工作类别过滤 -->
+		</if>
+		order by w.create_time desc <!-- 按创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 分页支持 -->
+		</if>
+	</select>
+
+	<!-- 查询工作总数 -->
+	<select id="getWorkListCount" resultType="Integer">
+		select count(*) from work where 1=1
+		<if test="work.id != null">
+			and id like CONCAT('%',#{work.id},'%') <!-- 根据工作ID过滤 -->
+		</if>
+		<if test="work.userId != null">
+			and user_id like CONCAT('%',#{work.userId},'%') <!-- 根据用户ID过滤 -->
+		</if>
+		<if test="work.isEffect != null">
+			and is_effect like CONCAT('%',#{work.isEffect},'%') <!-- 根据有效状态过滤 -->
+		</if>
+		<if test="work.isAuditing != null">
+			and is_auditing like CONCAT('%',#{work.isAuditing},'%') <!-- 根据审核状态过滤 -->
+		</if>
+		<if test="work.workCategory != null and work.workCategory != ''">
+			and work_category like CONCAT('%',#{work.workCategory},'%') <!-- 根据工作类别过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加新的工作记录 -->
+	<insert id="addWork" useGeneratedKeys="true" keyProperty="work.id" parameterType="com.work.pojo.Work">
+		insert into
+			work(user_id, title, content, phone,
+				 image, work_category, create_time)
+		values(#{work.userId}, #{work.title}, #{work.content},
+			   #{work.phone}, #{work.image}, #{work.workCategory}, #{work.createTime})
+	</insert>
+
+	<!-- 更新工作信息 -->
+	<update id="updateWork" parameterType="com.work.pojo.Work">
+		update work
+		<trim prefix="set" suffixOverrides=",">
+			<if test="work.title != null and work.title != ''">title = #{work.title},</if> <!-- 更新工作标题 -->
+			<if test="work.content != null and work.content != ''">content = #{work.content},</if> <!-- 更新工作内容 -->
+			<if test="work.phone != null and work.phone != ''">phone = #{work.phone},</if> <!-- 更新联系电话 -->
+			<if test="work.image != null and work.image != ''">image = #{work.image},</if> <!-- 更新工作图片 -->
+			<if test="work.workCategory != null and work.workCategory != ''">work_category = #{work.workCategory},</if> <!-- 更新工作类别 -->
+			<if test="work.isEffect != null">is_effect = #{work.isEffect},</if> <!-- 更新有效状态 -->
+			<if test="work.isAuditing != null">is_auditing = #{work.isAuditing},</if> <!-- 更新审核状态 -->
+		</trim>
+		where id = #{work.id} <!-- 根据工作ID进行更新 -->
+	</update>
+
+	<!-- 根据工作ID查询工作详细信息 -->
+	<select id="getWorkById" resultMap="BaseResultMap">
+		select * from work w
+						  LEFT JOIN user u ON w.user_id = u.user_id where w.id = #{id}
+	</select>
+
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 指定 XML 文档类型为 MyBatis 配置文件 -->
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 别名配置 -->
+	<typeAliases>
+		<!-- 指定一个包名，MyBatis 会扫描该包及其子包中的所有类，并为每个类生成一个别名 -->
+		<package name="com.work.pojo" />
+
+	</typeAliases>
+
+</configuration>
+
+<!--SqlMapConfig.xml 是 MyBatis 框架中的配置文件，主要用于定义 MyBatis 的运行环境、数据库连接、映射器等信息-->

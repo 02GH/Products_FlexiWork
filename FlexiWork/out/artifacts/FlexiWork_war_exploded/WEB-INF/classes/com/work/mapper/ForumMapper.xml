@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.work.mapper.ForumMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Forum" id="BaseResultMap">
+		<id column="forum_id" property="forumId" jdbcType="INTEGER" /> <!-- 论坛帖子ID -->
+		<result column="title" property="title" jdbcType="VARCHAR" /> <!-- 帖子标题 -->
+		<result column="content" property="content" jdbcType="VARCHAR" /> <!-- 帖子内容 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 帖子图片 -->
+		<result column="is_effect" property="isEffect" jdbcType="INTEGER" /> <!-- 是否有效 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="real_name" property="realName" jdbcType="VARCHAR" /> <!-- 用户真实姓名 -->
+		<result column="nick_name" property="nickName" jdbcType="VARCHAR" /> <!-- 用户昵称 -->
+		<result column="header_image" property="headerImage" jdbcType="VARCHAR" /> <!-- 用户头像 -->
+	</resultMap>
+
+	<!-- 查询论坛帖子列表，支持条件过滤和分页 -->
+	<select id="getForumList" resultMap="BaseResultMap">
+		select * from forum f
+		LEFT JOIN user u ON f.user_id = u.user_id
+		where 1=1
+		<if test="forum.forumId != null">
+			and forum_id like CONCAT('%',#{forum.forumId},'%') <!-- 根据论坛ID过滤 -->
+		</if>
+		<if test="forum.userId != null">
+			and f.user_id like CONCAT('%',#{forum.userId},'%') <!-- 根据用户ID过滤 -->
+		</if>
+		<if test="forum.isEffect !=null">
+			and f.is_effect like CONCAT('%',#{forum.isEffect},'%') <!-- 根据有效性过滤 -->
+		</if>
+		<if test="forum.title !=null and forum.title!=''">
+			and title like CONCAT('%',#{forum.title},'%') <!-- 根据标题过滤 -->
+		</if>
+		order by f.create_time desc <!-- 根据创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 支持分页 -->
+		</if>
+	</select>
+
+	<!-- 查询论坛帖子总数，用于分页 -->
+	<select id="getForumListCount" resultType="Integer">
+		select count(*) from forum where 1=1
+		<if test="forum.forumId != null">
+			and forum_id like CONCAT('%',#{forum.forumId},'%') <!-- 根据论坛ID过滤 -->
+		</if>
+		<if test="forum.isEffect !=null">
+			and is_effect like CONCAT('%',#{forum.isEffect},'%') <!-- 根据有效性过滤 -->
+		</if>
+		<if test="forum.title !=null and forum.title!=''">
+			and title like CONCAT('%',#{forum.title},'%') <!-- 根据标题过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加论坛帖子 -->
+	<insert id="addForum" useGeneratedKeys="true" keyProperty="forum.forumId" parameterType="com.work.pojo.Forum">
+		insert into
+			forum(user_id, title, content, image, create_time)
+		values(#{forum.userId}, #{forum.title}, #{forum.content},
+			   #{forum.image}, #{forum.createTime})
+	</insert>
+
+	<!-- 更新论坛帖子 -->
+	<update id="updateForum" parameterType="com.work.pojo.Forum">
+		update forum
+		<trim prefix="set" suffixOverrides=",">
+			<if test="forum.title != null and forum.title != ''">title = #{forum.title},</if>
+			<if test="forum.content != null and forum.content != ''">content = #{forum.content},</if>
+			<if test="forum.image != null and forum.image != ''">image = #{forum.image},</if>
+			<if test="forum.isEffect != null">is_effect = #{forum.isEffect},</if>
+		</trim>
+		where forum_id = #{forum.forumId} <!-- 根据论坛ID更新帖子 -->
+	</update>
+
+	<!-- 根据ID查询论坛帖子 -->
+	<select id="getForumById" resultMap="BaseResultMap">
+		select * from forum f
+		LEFT JOIN user u ON f.user_id = u.user_id
+		where f.forum_id = #{forumId} <!-- 根据论坛ID获取详细信息 -->
+	</select>
+
+</mapper>

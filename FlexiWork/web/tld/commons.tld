@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 声明文档类型为 XML，编码为 UTF-8 -->
+
+<!--这个 TLD 文件的主要作用是定义一个名为 page 的自定义标签，用于创建分页导航。
+用户在 JSP 页面中可以通过这个标签，将其与特定的 Java 类实现 (NavigationTag) 关联，从而实现动态导航功能。
+用户通过设置 bean、number 和 url 属性来控制分页的行为和显示效果。-->
+
+
+<!DOCTYPE taglib
+		PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+		"http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+	<!-- 指定标签库的版本 -->
+	<tlib-version>2.0</tlib-version>
+	<!-- 声明支持的 JSP 版本 -->
+	<jsp-version>1.2</jsp-version>
+	<!-- 标签库的短名称，JSP 页面中引用时使用 -->
+	<short-name>common</short-name>
+	<!-- 标签库的 URI，用于在 JSP 页面中定位和引用 -->
+	<uri>http://com.work/common</uri>
+	<!-- 标签库的显示名称 -->
+	<display-name>Common Tag</display-name>
+	<!-- 标签库的描述信息 -->
+	<description>Common Tag library</description>
+
+	<!-- 定义一个标签 -->
+	<tag>
+		<!-- 标签的名称 -->
+		<name>page</name>
+		<!-- 处理此标签的 Java 类 -->
+		<tag-class>com.work.common.utils.NavigationTag</tag-class>
+		<!-- 标签主体内容的类型，这里为 JSP 内容 -->
+		<body-content>JSP</body-content>
+		<!-- 标签的功能描述 -->
+		<description>create navigation for paging</description>
+		<!-- 定义标签的属性 -->
+		<attribute>
+			<!-- 属性名称 -->
+			<name>bean</name>
+			<!-- 表示该属性可以在运行时表达式中使用 -->
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>number</name>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<!-- 必需属性，使用此标签时必须提供 -->
+			<name>url</name>
+			<required>true</required>
+			<!-- 表示该属性可以在运行时表达式中使用 -->
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>

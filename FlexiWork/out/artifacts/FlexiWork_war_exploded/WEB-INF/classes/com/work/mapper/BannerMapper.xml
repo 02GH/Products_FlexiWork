@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--BannerMapper.xml 文件是 MyBatis 框架中用于操作横幅广告的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+这一文件实现了横幅广告的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和分页操作。-->
+
+<mapper namespace="com.work.mapper.BannerMapper">
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Banner" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="title" property="title" jdbcType="VARCHAR" /> <!-- 横幅标题 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 横幅图片 -->
+		<result column="is_effect" property="isEffect" jdbcType="INTEGER" /> <!-- 是否有效 -->
+		<result column="order_status" property="orderStatus" jdbcType="INTEGER" /> <!-- 排序状态 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="nick_name" property="nickName" jdbcType="VARCHAR" /> <!-- 用户昵称 -->
+	</resultMap>
+
+	<!-- 查询横幅列表，支持条件过滤和分页 -->
+	<select id="getBannerList" resultMap="BaseResultMap">
+		select * from banner b
+		LEFT JOIN user u ON b.user_id = u.user_id
+		where 1=1
+		<if test="banner.id != null">
+			and id like CONCAT('%',#{banner.id},'%') <!-- 根据ID过滤 -->
+		</if>
+		<if test="banner.isEffect != null">
+			and b.is_effect like CONCAT('%',#{banner.isEffect},'%') <!-- 根据是否有效过滤 -->
+		</if>
+		<if test="banner.title != null and banner.title != ''">
+			and title like CONCAT('%',#{banner.title},'%') <!-- 根据标题过滤 -->
+		</if>
+		order by b.order_status asc <!-- 根据排序状态升序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 支持分页 -->
+		</if>
+	</select>
+
+	<!-- 查询横幅总数，用于分页 -->
+	<select id="getBannerListCount" resultType="Integer">
+		select count(*) from banner where 1=1
+		<if test="banner.id != null">
+			and id like CONCAT('%',#{banner.id},'%') <!-- 根据ID过滤 -->
+		</if>
+		<if test="banner.isEffect != null">
+			and is_effect like CONCAT('%',#{banner.isEffect},'%') <!-- 根据是否有效过滤 -->
+		</if>
+		<if test="banner.title != null and banner.title != ''">
+			and title like CONCAT('%',#{banner.title},'%') <!-- 根据标题过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加横幅信息 -->
+	<insert id="addBanner" useGeneratedKeys="true" keyProperty="banner.id" parameterType="com.work.pojo.Banner">
+		insert into
+			banner(user_id, title, is_effect, image, order_status, create_time)
+		values(#{banner.userId}, #{banner.title}, #{banner.isEffect},
+			   #{banner.image}, #{banner.orderStatus}, #{banner.createTime})
+	</insert>
+
+	<!-- 更新横幅信息 -->
+	<update id="updateBanner" parameterType="com.work.pojo.Banner">
+		update banner
+		<trim prefix="set" suffixOverrides=",">
+			<if test="banner.title != null and banner.title != ''">title = #{banner.title},</if>
+			<if test="banner.isEffect != null">is_effect = #{banner.isEffect},</if>
+			<if test="banner.image != null and banner.image != ''">image = #{banner.image},</if>
+			<if test="banner.orderStatus != null">order_status = #{banner.orderStatus},</if>
+		</trim>
+		where id = #{banner.id} <!-- 根据ID更新 -->
+	</update>
+
+	<!-- 根据ID查询横幅信息 -->
+	<select id="getBannerById" resultMap="BaseResultMap">
+		select * from banner where id = #{id} <!-- 根据ID获取详细信息 -->
+	</select>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--JianzhiMapper.xml 文件是 MyBatis 框架中用于操作兼职信息的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了兼职信息和工作记录的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和动态过滤。-->
+
+<mapper namespace="com.work.mapper.JianzhiMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Jianzhi" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="work_id" property="workId" jdbcType="INTEGER" /> <!-- 工作ID -->
+	</resultMap>
+
+	<!-- 查询兼职列表，支持基于用户ID的条件过滤 -->
+	<select id="getList" resultMap="BaseResultMap">
+		select * from jianzhi
+		where 1=1
+		<if test="jianzhi.userId != null">
+			and user_id = #{jianzhi.userId} <!-- 根据用户ID过滤 -->
+		</if>
+	</select>
+
+	<!-- 查询工作的总数，用于分页 -->
+	<select id="getWorkListCount" resultType="Integer">
+		select count(*) from work where 1=1
+		<if test="work.id != null">
+			and id like CONCAT('%',#{work.id},'%') <!-- 根据工作ID过滤 -->
+		</if>
+		<if test="work.userId != null">
+			and user_id like CONCAT('%',#{work.userId},'%') <!-- 根据用户ID过滤 -->
+		</if>
+		<if test="work.isEffect !=null">
+			and is_effect like CONCAT('%',#{work.isEffect},'%') <!-- 根据有效性过滤 -->
+		</if>
+		<if test="work.isAuditing !=null">
+			and is_auditing like CONCAT('%',#{work.isAuditing},'%') <!-- 根据审核状态过滤 -->
+		</if>
+		<if test="work.workCategory !=null and work.workCategory!=''">
+			and work_category like CONCAT('%',#{work.workCategory},'%') <!-- 根据工作类别过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加兼职信息 -->
+	<insert id="addjianzhi" useGeneratedKeys="true" keyProperty="jianzhi.id" parameterType="com.work.pojo.Jianzhi">
+		insert into
+		jianzhi(user_id, work_id)
+		values(#{jianzhi.userId}, #{jianzhi.workId}) <!-- 插入用户ID和工作ID -->
+	</insert>
+
+	<!-- 更新工作信息 -->
+	<update id="updateWork" parameterType="com.work.pojo.Work">
+		update work
+		<trim prefix="set" suffixOverrides=",">
+			<if test="work.title != null and work.title != ''">title = #{work.title},</if> <!-- 更新工作标题 -->
+			<if test="work.content != null and work.content != ''">content = #{work.content},</if> <!-- 更新工作内容 -->
+			<if test="work.phone != null and work.phone != ''">phone = #{work.phone},</if> <!-- 更新联系电话 -->
+			<if test="work.image != null and work.image != ''">image = #{work.image},</if> <!-- 更新工作图片 -->
+			<if test="work.workCategory != null and work.workCategory != ''">work_category = #{work.workCategory},</if> <!-- 更新工作类别 -->
+			<if test="work.isEffect != null">is_effect = #{work.isEffect},</if> <!-- 更新有效性 -->
+			<if test="work.isAuditing != null">is_auditing = #{work.isAuditing},</if> <!-- 更新审核状态 -->
+		</trim>
+		where id = #{work.id} <!-- 根据工作ID更新 -->
+	</update>
+
+	<!-- 根据ID查询工作信息 -->
+	<select id="getWorkById" resultMap="BaseResultMap">
+		select * from work w
+		LEFT JOIN user u ON w.user_id = u.user_id where id = #{id} <!-- 根据工作ID获取详细信息 -->
+	</select>
+
+</mapper>

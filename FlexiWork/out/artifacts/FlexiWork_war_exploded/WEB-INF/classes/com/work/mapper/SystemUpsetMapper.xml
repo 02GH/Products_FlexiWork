@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--SystemUpsetMapper.xml 文件是 MyBatis 框架中用于操作系统设置的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了系统设置信息的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和动态过滤。-->
+
+<mapper namespace="com.work.mapper.SystemUpsetMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.SystemUpset" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="company" property="company" jdbcType="VARCHAR" /> <!-- 公司名称 -->
+		<result column="company_addres" property="companyAddres" jdbcType="VARCHAR" /> <!-- 公司地址 -->
+		<result column="qq" property="qq" jdbcType="VARCHAR" /> <!-- QQ联系方式 -->
+		<result column="phone" property="phone" jdbcType="VARCHAR" /> <!-- 电话联系方式 -->
+		<result column="we_chat" property="weChat" jdbcType="VARCHAR" /> <!-- 微信联系方式 -->
+		<result column="company_logo" property="companyLogo" jdbcType="VARCHAR" /> <!-- 公司Logo -->
+		<result column="welcom_text" property="welcomText" jdbcType="VARCHAR" /> <!-- 欢迎文本 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+	</resultMap>
+
+	<!-- 查询系统设置列表，支持条件过滤和分页 -->
+	<select id="getSystemUpsetList" resultMap="BaseResultMap">
+		select * from system_upset
+		where 1=1
+		<if test="systemUpset.id != null">
+			and id like CONCAT('%',#{systemUpset.id},'%') <!-- 根据系统设置ID过滤 -->
+		</if>
+		order by create_time desc <!-- 按创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 分页支持 -->
+		</if>
+	</select>
+
+	<!-- 查询系统设置总数 -->
+	<select id="getSystemUpsetListCount" resultType="Integer">
+		select count(*) from system_upset where 1=1
+		<if test="systemUpset.id != null">
+			and id like CONCAT('%',#{systemUpset.id},'%') <!-- 根据系统设置ID过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加新的系统设置 -->
+	<insert id="addSystemUpset" useGeneratedKeys="true" keyProperty="systemUpset.id" parameterType="com.work.pojo.SystemUpset">
+		insert into
+			system_upset(user_id, qq, phone, company, we_chat, welcom_text, company_logo, create_time, company_addres)
+		values(#{systemUpset.userId}, #{systemUpset.qq}, #{systemUpset.phone},
+			   #{systemUpset.company}, #{systemUpset.weChat}, #{systemUpset.welcomText},
+			   #{systemUpset.companyLogo}, #{systemUpset.createTime}, #{systemUpset.companyAddres})
+	</insert>
+
+	<!-- 更新系统设置信息 -->
+	<update id="updateSystemUpset" parameterType="com.work.pojo.SystemUpset">
+		update system_upset
+		<trim prefix="set" suffixOverrides=",">
+			<if test="systemUpset.phone != null and systemUpset.phone != ''">phone = #{systemUpset.phone},</if> <!-- 更新电话 -->
+			<if test="systemUpset.qq != null and systemUpset.qq != ''">qq = #{systemUpset.qq},</if> <!-- 更新QQ -->
+			<if test="systemUpset.company != null and systemUpset.company != ''">company = #{systemUpset.company},</if> <!-- 更新公司名称 -->
+			<if test="systemUpset.companyAddres != null and systemUpset.companyAddres != ''">company_addres = #{systemUpset.companyAddres},</if> <!-- 更新公司地址 -->
+			<if test="systemUpset.weChat != null and systemUpset.weChat != ''">we_chat = #{systemUpset.weChat},</if> <!-- 更新微信 -->
+			<if test="systemUpset.welcomText != null and systemUpset.welcomText != ''">welcom_text = #{systemUpset.welcomText},</if> <!-- 更新欢迎文本 -->
+			<if test="systemUpset.companyLogo != null and systemUpset.companyLogo != ''">company_logo = #{systemUpset.companyLogo},</if> <!-- 更新公司Logo -->
+		</trim>
+		where id = #{systemUpset.id} <!-- 根据系统设置ID进行更新 -->
+	</update>
+
+	<!-- 根据系统设置ID查询系统设置详细信息 -->
+	<select id="getSystemUpsetById" resultMap="BaseResultMap">
+		select * from system_upset where id = #{id} <!-- 根据ID获取系统设置信息 -->
+	</select>
+
+	<!-- 根据系统设置ID删除系统设置 -->
+	<delete id="deleteSystemUpsetById">
+		delete from system_upset where id = #{id} <!-- 根据ID删除系统设置 -->
+	</delete>
+
+</mapper>

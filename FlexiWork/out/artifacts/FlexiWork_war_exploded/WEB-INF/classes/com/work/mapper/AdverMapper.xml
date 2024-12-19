@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--AdverMapper.xml 文件是 MyBatis 框架中定义数据库操作的映射文件，它通过 SQL 语句与 Java 对象之间的映射关系来实现广告信息的管理。
+该文件的设计使得广告的增、删、查、改操作都得以高效实现，并且支持条件查询和分页等功能。-->
+
+<mapper namespace="com.work.mapper.AdverMapper">
+	<!-- 定义结果映射，将数据表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Adver" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="title" property="title" jdbcType="VARCHAR" /> <!-- 广告标题 -->
+		<result column="content" property="content" jdbcType="VARCHAR" /> <!-- 广告内容 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 广告图片 -->
+		<result column="position" property="position" jdbcType="INTEGER" /> <!-- 广告位置 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="nick_name" property="nickName" jdbcType="VARCHAR" /> <!-- 用户昵称 -->
+	</resultMap>
+
+	<!-- 查询广告列表，支持条件过滤和分页 -->
+	<select id="getAdverList" resultMap="BaseResultMap">
+		select * from adver f
+		LEFT JOIN user u ON f.user_id = u.user_id
+		where 1=1
+		<if test="adver.id != null">
+			and id like CONCAT('%',#{adver.id},'%')
+		</if>
+		<if test="adver.position != null">
+			and position like CONCAT('%',#{adver.position},'%')
+		</if>
+		<if test="adver.title != null and adver.title != ''">
+			and title like CONCAT('%',#{adver.title},'%')
+		</if>
+		order by f.create_time desc
+		<if test="page != null and limit != null">
+			limit #{page},#{limit}
+		</if>
+	</select>
+
+	<!-- 查询广告总数，用于分页 -->
+	<select id="getAdverListCount" resultType="Integer">
+		select count(*) from adver where 1=1
+		<if test="adver.id != null">
+			and id like CONCAT('%',#{adver.id},'%')
+		</if>
+		<if test="adver.position != null">
+			and position like CONCAT('%',#{adver.position},'%')
+		</if>
+		<if test="adver.title != null and adver.title != ''">
+			and title like CONCAT('%',#{adver.title},'%')
+		</if>
+	</select>
+
+	<!-- 添加广告信息 -->
+	<insert id="addAdver" useGeneratedKeys="true" keyProperty="adver.id" parameterType="com.work.pojo.Adver">
+		insert into
+			adver(user_id, title, content, image, position, create_time)
+		values(#{adver.userId}, #{adver.title}, #{adver.content},
+			   #{adver.image}, #{adver.position}, #{adver.createTime})
+	</insert>
+
+	<!-- 更新广告信息 -->
+	<update id="updateAdver" parameterType="com.work.pojo.Adver">
+		update adver
+		<trim prefix="set" suffixOverrides=",">
+			<if test="adver.title != null and adver.title != ''">title = #{adver.title},</if>
+			<if test="adver.content != null and adver.content != ''">content = #{adver.content},</if>
+			<if test="adver.image != null and adver.image != ''">image = #{adver.image},</if>
+			<if test="adver.position != null">position = #{adver.position},</if>
+		</trim>
+		where id = #{adver.id}
+	</update>
+
+	<!-- 根据ID查询广告信息 -->
+	<select id="getAdverById" resultMap="BaseResultMap">
+		select * from adver where id = #{id}
+	</select>
+
+	<!-- 根据ID删除广告信息 -->
+	<delete id="deleteAdverById">
+		delete from adver where id = #{id}
+	</delete>
+</mapper>

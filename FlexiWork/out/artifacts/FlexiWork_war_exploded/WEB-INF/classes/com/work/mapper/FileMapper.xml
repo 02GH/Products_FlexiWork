@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- FileMapper.xml 文件是 MyBatis 框架中用于操作文件记录的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。 -->
+
+<mapper namespace="com.work.mapper.FileMapper">
+
+    <!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+    <resultMap type="com.work.pojo.File" id="BaseResultMap">
+        <id column="file_id" property="fileId" jdbcType="INTEGER"/> <!-- 主键ID -->
+        <result column="user_id_fa" property="userIdFa" jdbcType="INTEGER"/> <!-- 发送者ID -->
+        <result column="user_id_jie" property="userIdJie" jdbcType="INTEGER"/> <!-- 接收者ID -->
+        <result column="file_addr" property="fileAddr" jdbcType="VARCHAR"/> <!-- 文件存储地址 -->
+        <result column="work_id" property="workId" jdbcType="VARCHAR"/> <!-- 岗位ID -->
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/> <!-- 创建时间 -->
+    </resultMap>
+
+    <!-- 添加文件记录 -->
+    <insert id="addFile" useGeneratedKeys="true" keyProperty="file.fileId" parameterType="com.work.pojo.File">
+        INSERT INTO file (user_id_fa, user_id_jie, file_addr, work_id, create_time)
+        VALUES (#{file.userIdFa}, #{file.userIdJie}, #{file.fileAddr}, #{file.workId}, NOW())
+    </insert>
+
+    <!-- 根据聊天双方ID查询文件记录 -->
+    <select id="getFileByUserIds" resultMap="BaseResultMap">
+        SELECT * FROM file WHERE user_id_fa = #{userIdFa} AND user_id_jie = #{userIdJie}    limit 1
+    </select>
+
+    <!-- 根据userIdFa查询文件记录 -->
+    <select id="getFileByUserIdJie" resultMap="BaseResultMap">
+        SELECT * FROM file WHERE user_id_jie = #{userIdJie}  limit 1
+    </select>
+
+    <!-- 更新文件记录 -->
+    <update id="updateFile" parameterType="com.work.pojo.File">
+        UPDATE file
+        SET file_addr = #{file.fileAddr},
+            create_time = NOW()
+        WHERE user_id_fa = #{file.userIdFa} AND user_id_jie = #{file.userIdJie}
+    </update>
+
+    <!-- 获取文件记录列表，支持条件过滤和分页 -->
+    <select id="getFileList" resultMap="BaseResultMap">
+        SELECT * FROM file WHERE 1=1
+        <if test="file.userIdFa != null">
+            AND user_id_fa = #{file.userIdFa} <!-- 根据发送者ID过滤 -->
+        </if>
+        <if test="file.userIdJie != null">
+            AND user_id_jie = #{file.userIdJie} <!-- 根据接收者ID过滤 -->
+        </if>
+        <if test="file.workId != null">
+            AND work_id = #{file.workId} <!-- 根据岗位ID过滤 -->
+        </if>
+        ORDER BY create_time DESC
+        <if test="page != null and limit != null">
+            LIMIT #{page}, #{limit} <!-- 支持分页 -->
+        </if>
+    </select>
+
+    <!-- 获取文件记录总数 -->
+    <select id="getFileListCount" resultType="Integer">
+        SELECT COUNT(*) FROM file WHERE 1=1
+        <if test="file.userIdFa != null">
+            AND user_id_fa = #{file.userIdFa} <!-- 根据发送者ID过滤 -->
+        </if>
+        <if test="file.userIdJie != null">
+            AND user_id_jie = #{file.userIdJie} <!-- 根据接收者ID过滤 -->
+        </if>
+        <if test="file.workId != null">
+            AND work_id = #{file.workId} <!-- 根据岗位ID过滤 -->
+        </if>
+    </select>
+
+</mapper>

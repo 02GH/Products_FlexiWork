@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--ForumReplyMapper.xml 文件是 MyBatis 框架中用于操作论坛回复记录的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了论坛回复记录的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和分页操作。-->
+
+<mapper namespace="com.work.mapper.ForumReplyMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.ForumReply" id="BaseResultMap">
+		<id column="reply_id" property="replyId" jdbcType="INTEGER" /> <!-- 回复ID -->
+		<result column="reply_content" property="replyContent" jdbcType="VARCHAR" /> <!-- 回复内容 -->
+		<result column="reply_image" property="replyImage" jdbcType="VARCHAR" /> <!-- 回复图片 -->
+		<result column="status" property="status" jdbcType="INTEGER" /> <!-- 回复状态 -->
+		<result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" /> <!-- 回复时间 -->
+
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="real_name" property="realName" jdbcType="VARCHAR" /> <!-- 用户真实姓名 -->
+		<result column="nick_name" property="nickName" jdbcType="VARCHAR" /> <!-- 用户昵称 -->
+		<result column="header_image" property="headerImage" jdbcType="VARCHAR" /> <!-- 用户头像 -->
+
+		<result column="forum_id" property="forumId" jdbcType="INTEGER" /> <!-- 论坛帖子ID -->
+	</resultMap>
+
+	<!-- 查询论坛回复列表，支持条件过滤和分页 -->
+	<select id="getForumReplyList" resultMap="BaseResultMap">
+		select * from forum_reply r
+		LEFT JOIN user u ON r.user_id = u.user_id
+		LEFT JOIN forum f ON r.forum_id = f.forum_id
+		where 1=1
+		<if test="forumReply.replyId != null">
+			and reply_id like CONCAT('%',#{forumReply.replyId},'%') <!-- 根据回复ID过滤 -->
+		</if>
+		<if test="forumReply.forumId != null">
+			and r.forum_id like CONCAT('%',#{forumReply.forumId},'%') <!-- 根据论坛ID过滤 -->
+		</if>
+		<if test="forumReply.status != null">
+			and r.status like CONCAT('%',#{forumReply.status},'%') <!-- 根据状态过滤 -->
+		</if>
+		order by r.reply_time asc <!-- 根据回复时间升序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 支持分页 -->
+		</if>
+	</select>
+
+	<!-- 查询论坛回复总数，用于分页 -->
+	<select id="getForumReplyListCount" resultType="Integer">
+		select count(*) from forum_reply where 1=1
+		<if test="forumReply.replyId != null">
+			and reply_id like CONCAT('%',#{forumReply.replyId},'%') <!-- 根据回复ID过滤 -->
+		</if>
+		<if test="forumReply.forumId != null">
+			and forum_id like CONCAT('%',#{forumReply.forumId},'%') <!-- 根据论坛ID过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加论坛回复 -->
+	<insert id="addForumReply" useGeneratedKeys="true" keyProperty="forumReply.replyId" parameterType="com.work.pojo.ForumReply">
+		insert into
+		forum_reply(user_id, forum_id, reply_content, reply_image, reply_time)
+		values(#{forumReply.userId}, #{forumReply.forumId}, #{forumReply.replyContent},
+		#{forumReply.replyImage}, #{forumReply.replyTime}) <!-- 插入新回复 -->
+	</insert>
+
+	<!-- 更新论坛回复 -->
+	<update id="updateForumReply" parameterType="com.work.pojo.ForumReply">
+		update forum_reply
+		<trim prefix="set" suffixOverrides=",">
+			<if test="forumReply.replyContent != null and forumReply.replyContent != ''">reply_content = #{forumReply.replyContent},</if>
+			<if test="forumReply.replyImage != null and forumReply.replyImage != ''">reply_image = #{forumReply.replyImage},</if>
+			<if test="forumReply.status != null">status = #{forumReply.status},</if>
+		</trim>
+		where 1=1
+		<if test="forumReply.replyId != null">
+			and reply_id = #{forumReply.replyId} <!-- 根据回复ID更新 -->
+		</if>
+		<if test="forumReply.forumId != null">
+			and forum_id = #{forumReply.forumId} <!-- 根据论坛ID更新 -->
+		</if>
+	</update>
+
+	<!-- 根据ID查询论坛回复 -->
+	<select id="getForumReplyById" resultMap="BaseResultMap">
+		select * from forum_reply where reply_id = #{replyId} <!-- 根据回复ID获取详细信息 -->
+	</select>
+
+	<!-- 根据ID删除论坛回复 -->
+	<delete id="deleteForumReply">
+		delete from forum_reply where reply_id = #{replyId} <!-- 根据回复ID删除回复 -->
+	</delete>
+</mapper>

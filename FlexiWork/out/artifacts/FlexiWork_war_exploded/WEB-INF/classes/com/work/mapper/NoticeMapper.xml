@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--NoticeMapper.xml 文件是 MyBatis 框架中用于操作通知的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了通知信息的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和动态过滤。-->
+
+<mapper namespace="com.work.mapper.NoticeMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Notice" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="title" property="title" jdbcType="VARCHAR" /> <!-- 通知标题 -->
+		<result column="content" property="content" jdbcType="VARCHAR" /> <!-- 通知内容 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 附加图片 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="nick_name" property="nickName" jdbcType="VARCHAR" /> <!-- 用户昵称 -->
+	</resultMap>
+
+	<!-- 查询通知列表，支持条件过滤和分页 -->
+	<select id="getNoticeList" resultMap="BaseResultMap">
+		select * from notice n
+		LEFT JOIN user u ON n.user_id = u.user_id
+		where 1=1
+		<if test="notice.id != null">
+			and id like CONCAT('%',#{notice.id},'%') <!-- 根据通知ID过滤 -->
+		</if>
+		<if test="notice.title !=null and notice.title!=''">
+			and title like CONCAT('%',#{notice.title},'%') <!-- 根据通知标题过滤 -->
+		</if>
+		order by n.create_time desc <!-- 按创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 分页支持 -->
+		</if>
+	</select>
+
+	<!-- 查询通知总数 -->
+	<select id="getNoticeListCount" resultType="Integer">
+		select count(*) from notice where 1=1
+		<if test="notice.id != null">
+			and id like CONCAT('%',#{notice.id},'%') <!-- 根据通知ID过滤 -->
+		</if>
+		<if test="notice.title !=null and notice.title!=''">
+			and title like CONCAT('%',#{notice.title},'%') <!-- 根据通知标题过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加新的通知 -->
+	<insert id="addNotice" useGeneratedKeys="true" keyProperty="notice.id" parameterType="com.work.pojo.Notice">
+		insert into
+		notice(user_id, title, content, image, create_time)
+		values(#{notice.userId}, #{notice.title}, #{notice.content},
+		#{notice.image}, #{notice.createTime}) <!-- 插入新通知 -->
+	</insert>
+
+	<!-- 更新通知信息 -->
+	<update id="updateNotice" parameterType="com.work.pojo.Notice">
+		update notice
+		<trim prefix="set" suffixOverrides=",">
+			<if test="notice.title != null and notice.title != ''">title = #{notice.title},</if> <!-- 更新通知标题 -->
+			<if test="notice.content != null and notice.content != ''">content = #{notice.content},</if> <!-- 更新通知内容 -->
+			<if test="notice.image != null and notice.image != ''">image = #{notice.image},</if> <!-- 更新通知图片 -->
+		</trim>
+		where id = #{notice.id} <!-- 根据通知ID进行更新 -->
+	</update>
+
+	<!-- 根据通知ID查询通知详细信息 -->
+	<select id="getNoticeById" resultMap="BaseResultMap">
+		select * from notice where id = #{id} <!-- 根据通知ID获取通知信息 -->
+	</select>
+
+	<!-- 根据通知ID删除通知 -->
+	<delete id="deleteNoticeById">
+		delete from notice where id = #{id} <!-- 根据通知ID删除通知 -->
+	</delete>
+
+</mapper>

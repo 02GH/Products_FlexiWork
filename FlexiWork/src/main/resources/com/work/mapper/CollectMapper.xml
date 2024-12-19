@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--CollectMapper.xml 文件是 MyBatis 框架中用于操作用户收藏记录的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了收藏记录的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和分页操作。-->
+
+<mapper namespace="com.work.mapper.CollectMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Collect" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="forum_id" property="forumId" jdbcType="INTEGER" /> <!-- 论坛ID -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+	</resultMap>
+
+	<!-- 查询收藏记录列表，支持条件过滤和分页 -->
+	<select id="getCollectList" resultMap="BaseResultMap">
+		select * from collect as c
+		LEFT JOIN user as u ON c.user_id = u.user_id
+		LEFT JOIN forum as f ON c.forum_id = f.forum_id
+		where 1=1
+		<if test="collect.id != null">
+			and id like CONCAT('%',#{collect.id},'%') <!-- 根据收藏ID过滤 -->
+		</if>
+		<if test="collect.userId != null">
+			and c.user_id like CONCAT('%',#{collect.userId},'%') <!-- 根据用户ID过滤 -->
+		</if>
+		<if test="collect.forumId != null">
+			and c.forum_id like CONCAT('%',#{collect.forumId},'%') <!-- 根据论坛ID过滤 -->
+		</if>
+
+		order by c.create_time desc <!-- 根据创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 支持分页 -->
+		</if>
+	</select>
+
+	<!-- 查询收藏记录总数，用于分页 -->
+	<select id="getCollectListCount" resultType="Integer">
+		select count(*) from collect where 1=1
+		<if test="collect.id != null">
+			and id like CONCAT('%',#{collect.id},'%') <!-- 根据收藏ID过滤 -->
+		</if>
+		<if test="collect.userId != null">
+			and user_id like CONCAT('%',#{collect.userId},'%') <!-- 根据用户ID过滤 -->
+		</if>
+		<if test="collect.forumId != null">
+			and forum_id like CONCAT('%',#{collect.forumId},'%') <!-- 根据论坛ID过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加收藏记录 -->
+	<insert id="addCollect" useGeneratedKeys="true" keyProperty="collect.id" parameterType="com.work.pojo.Collect">
+		insert into
+			collect(user_id, forum_id, create_time)
+		values(#{collect.userId}, #{collect.forumId}, #{collect.createTime})
+	</insert>
+
+	<!-- 根据ID查询收藏记录 -->
+	<select id="getCollectById" resultMap="BaseResultMap">
+		select * from collect where id = #{id} <!-- 根据收藏记录ID获取详细信息 -->
+	</select>
+
+	<!-- 根据ID删除收藏记录 -->
+	<delete id="deleteCollectById">
+		delete from collect where id = #{id} <!-- 根据收藏记录ID删除 -->
+	</delete>
+
+	<!-- 根据用户ID和论坛ID删除收藏记录 -->
+	<delete id="deleteMyCollect">
+		delete from collect where
+		user_id = #{collect.userId} and forum_id = #{collect.forumId} <!-- 删除用户对特定论坛的收藏 -->
+	</delete>
+
+</mapper>

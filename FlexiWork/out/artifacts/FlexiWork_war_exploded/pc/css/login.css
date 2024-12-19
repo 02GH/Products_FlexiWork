@@ -1,0 +1,181 @@
+/* CSS Document */
+
+/* 设置页面整体布局 */
+html, body {
+	width: 100%; /* 设置页面宽度为 100% */
+	height: 100%; /* 设置页面高度为 100% */
+	margin: 0; /* 清除页面外边距 */
+	min-height: 450px; /* 设置页面最小高度为 450px */
+	min-width: 1200px; /* 设置页面最小宽度为 1200px */
+}
+
+/* 登录页面的主容器 */
+.div_deng {
+	width: 100%;
+	height: 100%;
+	position: relative;
+	background-color: #52cbc5; /* 背景颜色（可选） */
+	background-image: url('../images/div_deng.png'); /* 背景图片路径 */
+	background-size: cover; /* 背景图片覆盖整个容器 */
+	background-position: center; /* 背景图片居中 */
+	background-repeat: no-repeat; /* 防止背景图片重复 */
+}
+
+
+/*!* 顶部区域 *!
+.div_top {
+	width: 100%; !* 设置宽度为 100% *!
+	height: 120px; !* 设置高度为 120px *!
+	position: absolute; !* 设置为绝对定位 *!
+	top: 0; !* 定位到顶部 *!
+	background-color: #52cbc5; !* 设置背景颜色为浅绿色 *!
+}*/
+
+/* 顶部区域的 Logo 容器 */
+.div_logo {
+	width: 190px; /* 设置宽度为 190px */
+	height: 70px; /* 设置高度为 70px */
+	float: left; /* 设置为左浮动 */
+	margin-left: 100px; /* 设置左边距为 100px */
+	margin-top: 40px; /* 设置上边距为 40px */
+	background-color: #fff; /* 设置背景颜色为白色 */
+	padding-top: 10px; /* 设置上内边距为 10px */
+	padding-left: 10px; /* 设置左内边距为 10px */
+	border-radius: 3px; /* 设置圆角为 3px */
+}
+
+/* Logo 图片样式 */
+.div_logo img {
+	height: 50px; /* 设置图片高度为 50px */
+}
+
+/* 中间区域 */
+.div_zhong {
+	width: 100%; /* 设置宽度为 100% */
+	height: 2%; /* 设置高度为 2% */
+	position: absolute; /* 设置为绝对定位 */
+	top: 49%; /* 定位到页面垂直方向的 49% 位置 */
+}
+
+/* 底部区域 */
+.div_xia {
+	width: 100%; /* 设置宽度为 100% */
+	height: 25px; /* 设置高度为 25px */
+	position: absolute; /* 设置为绝对定位 */
+	bottom: 0; /* 定位到页面底部 */
+}
+
+/* 中间区域的左侧部分 */
+.div_zhong_l {
+	width: 500px; /* 设置宽度为 500px */
+	height: 350px; /* 设置高度为 350px */
+	position: absolute; /* 设置为绝对定位 */
+	top: -150px; /* 向上偏移 150px */
+	left: 15%; /* 定位到页面左侧的 15% 位置 */
+}
+
+/* 中间区域的右侧部分（登录表单区域） */
+.div_zhong_r {
+	width: 350px; /* 设置宽度为 350px */
+	height: 270px; /* 设置高度为 270px */
+	background: #fff; /* 设置背景颜色为白色 */
+	position: absolute; /* 设置为绝对定位 */
+	top: -125px; /* 向上偏移 125px */
+	right: 15%; /* 定位到页面右侧的 15% 位置 */
+	border-radius: 10px; /* 设置圆角为 10px */
+}
+
+/* 登录表单容器 */
+.form_deng {
+	width: 300px; /* 设置宽度为 300px */
+	height: 280px; /* 设置高度为 280px */
+	margin-left: 20px; /* 设置左边距为 20px */
+}
+
+/* 登录表单标题 */
+.form_deng h2 {
+	width: 300px; /* 设置宽度为 300px */
+	height: 35px; /* 设置高度为 35px */
+	margin-top: 20px; /* 设置上边距为 20px */
+	color: #333; /* 设置文字颜色为深灰色 */
+}
+
+/* 表单标签样式 */
+.form_deng .span {
+	display: inline-block; /* 设置为行内块元素 */
+	width: 70px; /* 设置宽度为 70px */
+	color: #333; /* 设置文字颜色为深灰色 */
+	font-size: 16px; /* 设置字体大小为 16px */
+	font-weight: 600; /* 设置字体加粗 */
+	text-align: right; /* 设置文字右对齐 */
+}
+
+/* 表单输入框样式 */
+.form_deng .input_text {
+	width: 220px; /* 设置宽度为 220px */
+	height: 30px; /* 设置高度为 30px */
+	background-color: #ccc; /* 设置背景颜色为浅灰色 */
+	font-size: 16px; /* 设置字体大小为 16px */
+	color: #333; /* 设置文字颜色为深灰色 */
+	padding-left: 10px; /* 设置左内边距为 10px */
+}
+
+/* 表单错误提示信息 */
+.form_deng .msg {
+	display: block; /* 设置为块级元素 */
+	width: 300px; /* 设置宽度为 300px */
+	height: 22px; /* 设置高度为 22px */
+	font-size: 16px; /* 设置字体大小为 16px */
+	color: red; /* 设置文字颜色为红色 */
+	font-weight: 400; /* 设置字体不加粗 */
+	float: left; /* 设置为左浮动 */
+	padding-left: 70px; /* 设置左内边距为 70px */
+}
+
+/* 登录按钮样式 */
+.input_deng {
+	width: 80px; /* 设置宽度为 80px */
+	height: 30px; /* 设置高度为 30px */
+	background-color: #ccc; /* 设置背景颜色为浅灰色 */
+	float: left; /* 设置为左浮动 */
+	margin-left: 70px; /* 设置左边距为 70px */
+	cursor: pointer; /* 设置鼠标悬停时显示为手型 */
+}
+
+/* 注册按钮样式 */
+.input_zhu {
+	width: 80px; /* 设置宽度为 80px */
+	height: 30px; /* 设置高度为 30px */
+	background-color: #ccc; /* 设置背景颜色为浅灰色 */
+	float: left; /* 设置为左浮动 */
+	margin-left: 60px; /* 设置左边距为 60px */
+	cursor: pointer; /* 设置鼠标悬停时显示为手型 */
+}
+
+/* 记住密码和忘记密码区域 */
+.remeber {
+	padding-left: 70px; /* 设置左内边距为 70px */
+	padding-bottom: 10px; /* 设置下内边距为 10px */
+}
+
+/* 记住密码复选框样式 */
+.remeber input {
+	float: left; /* 设置为左浮动 */
+	margin-top: 0; /* 清除上边距 */
+	cursor: pointer; /* 设置鼠标悬停时显示为手型 */
+}
+
+/* 记住密码和忘记密码文字样式 */
+.remeber span {
+	color: #999; /* 设置文字颜色为浅灰色 */
+	display: inline-block; /* 设置为行内块元素 */
+	float: left; /* 设置为左浮动 */
+	margin-top: -5px; /* 向上偏移 5px */
+	margin-left: 5px; /* 设置左边距为 5px */
+}
+
+/* 忘记密码链接样式 */
+.remeber .forget-password {
+	margin-left: 80px; /* 设置左边距为 80px */
+	cursor: pointer; /* 设置鼠标悬停时显示为手型 */
+}

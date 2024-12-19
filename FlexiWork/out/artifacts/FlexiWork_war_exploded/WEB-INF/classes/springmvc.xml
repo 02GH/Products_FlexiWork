@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--这段XML配置文件是Spring MVC应用中的典型配置文件，定义了控制器的扫描、视图解析、静态资源管理、拦截器和文件上传处理等。-->
+
+<!--组件扫描：通过component-scan自动发现和注册控制器类，简化配置并支持面向组件的设计。
+
+属性管理：通过property-placeholder外部化配置参数，提升配置的灵活性和可维护性。
+
+注解支持：annotation-driven简化基于注解的控制器开发，提高代码的可读性和灵活性。
+
+静态资源处理：mvc:resources配置指明了静态资源的路径和访问方式，确保静态内容的高效服务。
+
+视图解析：InternalResourceViewResolver实现了视图名到视图文件的映射，简化了视图管理。
+
+拦截器使用：mvc:interceptors允许在请求处理的不同阶段插入通用逻辑，增强了应用的功能和安全性。
+
+文件上传支持：通过CommonsMultipartResolver配置，应用可以处理多部分文件上传请求，支持上传功能。-->
+
+<!--XML声明：指定文档版本和编码。
+命名空间声明：为Spring Beans、上下文和MVC功能定义XML命名空间。
+Schema声明：指定Spring框架所使用的各个XSD模式文件，确保XML合法性和自动补全支持。-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd 
+http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd ">
+
+	<!-- (配置Controller扫描)控制器扫描：自动扫描指定包中的类com.work.controller，识别并注册为Spring Beans，特别是带有@Controller注解的类。 -->
+	<context:component-scan base-package="com.work.controller" />
+	<!--属性占位符配置：从resource.properties文件加载属性，允许在XML中使用${...}来引用这些属性-->
+	<context:property-placeholder location="classpath:resource.properties" />
+
+	<!-- 注解驱动配置：启用Spring MVC的注解支持，如@RequestMapping、@ControllerAdvice等，简化控制器配置 -->
+	<mvc:annotation-driven />
+
+	<!-- (对静态资源放行)静态资源配置：指定静态资源路径及其映射，确保特定路径下的静态文件（如CSS、JS、图片等）被正确访问 -->
+	<mvc:resources location="/pc/" mapping="/pc/**" />
+	<mvc:resources location="/server/" mapping="/server/**" />
+	<mvc:resources location="/headerImages/" mapping="/headerImages/**" />
+	<mvc:resources location="/workImages/" mapping="/workImages/**" />
+	<mvc:resources location="/forumImages/" mapping="/forumImages/**" />
+	<mvc:resources location="/chatImages/" mapping="/chatImages/**" />
+	<mvc:resources location="/mailboxImages/" mapping="/mailboxImages/**" />
+	<mvc:resources location="/systemImages/" mapping="/systemImages/**" />
+	<!-- 配置视图解析器：配置视图解析器，指定视图文件的前缀和后缀，实现视图名称到实际视图文件的解析，如将视图名home解析为/WEB-INF/jsp/home.jsp -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<!-- 前缀 -->
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<!-- 后缀 -->
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 配置拦截器：配置Spring MVC拦截器，用于处理请求之前和之后的通用逻辑（如权限检查、日志记录）。在例子中，LoginInterceptor可以用于处理用户登录状态的验证 -->
+	<mvc:interceptors>
+		<bean class="com.work.common.utils.LoginInterceptor"></bean>
+	</mvc:interceptors>
+
+	<!-- 配置文件上传解析器：配置文件上传解析器，以支持多部分请求的文件上传。设置默认编码为UTF-8，并限制最大上传文件大小为5MB -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="defaultEncoding" value="UTF-8"></property>
+		<!-- 约束大小5M -->
+		<property name="maxUploadSize" value="5097152"></property>
+	</bean>
+</beans>
+	

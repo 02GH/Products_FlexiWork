@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!--MailboxMapper.xml 文件是 MyBatis 框架中用于操作邮件箱的映射文件，定义了如何通过 SQL 语句与 Java 对象进行交互。
+该文件实现了邮件箱信息的完整 CRUD（创建、读取、更新、删除）功能，并支持条件查询和动态过滤。-->
+
+<mapper namespace="com.work.mapper.MailboxMapper">
+
+	<!-- 定义结果映射，将数据库表字段映射到 Java 对象属性 -->
+	<resultMap type="com.work.pojo.Mailbox" id="BaseResultMap">
+		<id column="id" property="id" jdbcType="INTEGER" /> <!-- 主键ID -->
+		<result column="title" property="title" jdbcType="VARCHAR" /> <!-- 邮件标题 -->
+		<result column="content" property="content" jdbcType="VARCHAR" /> <!-- 邮件内容 -->
+		<result column="image" property="image" jdbcType="VARCHAR" /> <!-- 附加图片 -->
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" /> <!-- 创建时间 -->
+
+		<result column="user_id" property="userId" jdbcType="INTEGER" /> <!-- 用户ID -->
+		<result column="nick_name" property="nickName" jdbcType="VARCHAR" /> <!-- 用户昵称 -->
+	</resultMap>
+
+	<!-- 查询邮件箱列表，支持条件过滤和分页 -->
+	<select id="getMailboxList" resultMap="BaseResultMap">
+		select * from mailbox f
+		LEFT JOIN user u ON f.user_id = u.user_id
+		where 1=1
+		<if test="mailbox.id != null">
+			and id like CONCAT('%',#{mailbox.id},'%') <!-- 根据邮件ID过滤 -->
+		</if>
+		<if test="mailbox.title !=null and mailbox.title!=''">
+			and title like CONCAT('%',#{mailbox.title},'%') <!-- 根据邮件标题过滤 -->
+		</if>
+		order by f.create_time desc <!-- 按创建时间降序排列 -->
+		<if test="page != null and limit != null">
+			limit #{page},#{limit} <!-- 分页支持 -->
+		</if>
+	</select>
+
+	<!-- 查询邮件箱列表的总数 -->
+	<select id="getMailboxListCount" resultType="Integer">
+		select count(*) from mailbox where 1=1
+		<if test="mailbox.id != null">
+			and id like CONCAT('%',#{mailbox.id},'%') <!-- 根据邮件ID过滤 -->
+		</if>
+		<if test="mailbox.title !=null and mailbox.title!=''">
+			and title like CONCAT('%',#{mailbox.title},'%') <!-- 根据邮件标题过滤 -->
+		</if>
+	</select>
+
+	<!-- 添加新的邮件 -->
+	<insert id="addMailbox" useGeneratedKeys="true" keyProperty="mailbox.id" parameterType="com.work.pojo.Mailbox">
+		insert into
+		mailbox(user_id, title, content, image, create_time)
+		values(#{mailbox.userId}, #{mailbox.title}, #{mailbox.content},
+		#{mailbox.image}, #{mailbox.createTime}) <!-- 插入新邮件 -->
+	</insert>
+
+	<!-- 更新邮件信息 -->
+	<update id="updateMailbox" parameterType="com.work.pojo.Mailbox">
+		update mailbox
+		<trim prefix="set" suffixOverrides=",">
+			<if test="mailbox.title != null and mailbox.title != ''">title = #{mailbox.title},</if> <!-- 更新邮件标题 -->
+			<if test="mailbox.content != null and mailbox.content != ''">content = #{mailbox.content},</if> <!-- 更新邮件内容 -->
+			<if test="mailbox.image != null and mailbox.image != ''">image = #{mailbox.image},</if> <!-- 更新邮件图片 -->
+		</trim>
+		where id = #{mailbox.id} <!-- 根据邮件ID进行更新 -->
+	</update>
+
+	<!-- 根据邮件ID查询邮件详细信息 -->
+	<select id="getMailboxById" resultMap="BaseResultMap">
+		select * from mailbox where id = #{id} <!-- 根据邮件ID获取邮件信息 -->
+	</select>
+
+	<!-- 根据邮件ID删除邮件 -->
+	<delete id="deleteMailboxById">
+		delete from mailbox where id = #{id} <!-- 根据邮件ID删除邮件 -->
+	</delete>
+
+</mapper>
